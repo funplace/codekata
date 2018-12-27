@@ -1,8 +1,8 @@
 package me.korkorna.kataexamples.kata09;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /*
 *   Item   Unit      Special
@@ -14,28 +14,23 @@ C     20
 D     15
 * */
 public class Checkout {
-    private Map<String, Integer> pricingRules;
-    private PricingRules pricingRules2;
-    private List<String> checkoutList;
+    private Map<ItemCode, Integer> pricingRules;
+    private Map<ItemCode, Integer> items;
 
-    public Checkout(Map<String, Integer> pricingRules) {
+    public Checkout(Map<ItemCode, Integer> pricingRules) {
         this.pricingRules = pricingRules;
-        this.checkoutList = new ArrayList<>();
+        this.items = new HashMap();
     }
 
-    public Checkout(PricingRules pricingRules2) {
-        this.pricingRules2 = pricingRules2;
+    public void scan(ItemCode itemCode) {
+        if (itemCode != null) items.merge(itemCode, 1, (a, b) -> a + b);
     }
 
-    public void scan(String item) {
-        if (item != null) checkoutList.add(item);
-    }
-
-    public int total() {
-        int total = 0;
-        for (int i = 0; i < checkoutList.size(); i++) {
-            total += pricingRules.get(checkoutList.get(i));
-        }
-        return total;
+    public Money total() {
+        return items.entrySet()
+                .stream()
+                .map(entry -> new Money(pricingRules.get(entry.getKey()) * entry.getValue()))
+                .collect(Collectors.reducing((a, b) -> a.add(b)))
+                .orElse(new Money(0));
     }
 }

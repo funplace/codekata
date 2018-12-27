@@ -10,33 +10,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckoutTest {
 
-    private Map<String, Integer> pricingRules;
-    private PricingRules pricingRules2;
+    private Map<ItemCode, Integer> pricingRules;
     private Checkout checkout;
 
     @Before
     public void setUp() throws Exception {
         pricingRules = new HashMap<>();
-        pricingRules.put("A", 50);
-        pricingRules.put("B", 30);
-        pricingRules.put("C", 20);
-        pricingRules.put("D", 15);
+        pricingRules.put(new ItemCode("A"), 50);
+        pricingRules.put(new ItemCode("B"), 30);
+        pricingRules.put(new ItemCode("C"), 20);
+        pricingRules.put(new ItemCode("D"), 15);
 
         checkout = new Checkout(pricingRules);
-        Checkout out = new Checkout(pricingRules2);
     }
 
     @Test
     public void 아무것도안살때() {
+        Money expectMondy = new Money(0);
         Checkout checkout = new Checkout(pricingRules);
-        checkout.scan("");
-        assertThat(checkout.total()).isEqualTo(0);
+        checkout.scan(null);
+        assertThat(checkout.total()).isEqualTo(expectMondy);
     }
 
     @Test
     public void A살때() {
+        Money expectMondy = new Money(50);
         Checkout checkout = new Checkout(pricingRules);
-        checkout.scan("A");
-        assertThat(checkout.total()).isEqualTo(50);
+        checkout.scan(new ItemCode("A"));
+        assertThat(checkout.total()).isEqualTo(expectMondy);
     }
 }
